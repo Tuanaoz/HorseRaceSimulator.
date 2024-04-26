@@ -1,0 +1,246 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
+import java.lang.Math;
+
+public class Race
+{
+    private static int raceLength;
+    static Horse lane1Horse;
+    static Horse lane2Horse;
+    static Horse lane3Horse;
+    
+    public static void main(String[] args) {
+        // Sample usage of the Race class
+        int raceLength = 20; 
+        Race race = new Race(raceLength);
+    
+        // Create three Horse objects    
+        Horse horse1 = new Horse('♘', "horse1", "Thoroughbred", "black", 0.6);
+        Horse horse2 = new Horse('♞', "horse2", "Thoroughbred", "brown", 0.6);
+        Horse horse3 = new Horse('♟', "horse3", "Thoroughbred", "spotted", 0.4);
+    
+        // Add horses to lanes
+        race.addHorse(horse1, 1);
+        race.addHorse(horse2, 2);
+        race.addHorse(horse3, 3);
+    
+        // Start the race
+        race.startRace();
+    }
+        
+
+    /**
+     * Constructor for objects of class Race
+     * Initially there are no horses in the lanes
+     * 
+     * @param distance the length of the racetrack (in metres/yards...)
+     */
+    public Race(int distance)
+    {
+        // initialise instance variables
+        raceLength = distance;
+        lane1Horse = null;
+        lane2Horse = null;
+        lane3Horse = null;
+    }
+    
+    /**
+     * Adds a horse to the race in a given lane
+     * 
+     * @param theHorse the horse to be added to the race
+     * @param laneNumber the lane that the horse will be added to
+     */
+    public static void addHorse(Horse theHorse, int laneNumber)
+    {
+        if (laneNumber == 1)
+        {
+            lane1Horse = theHorse;
+        }
+        else if (laneNumber == 2)
+        {
+            lane2Horse = theHorse;
+        }
+        else if (laneNumber == 3)
+        {
+            lane3Horse = theHorse;
+        }
+        else
+        {
+            System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
+        }
+    }
+    
+    /**
+     * Start the race
+     * The horse are brought to the start and
+     * then repeatedly moved forward until the 
+     * race is finished
+     */
+    public static void startRace() {
+        Horse winner = null;
+    
+        boolean finished = false;
+    
+        lane1Horse.goBackToStart();
+        lane2Horse.goBackToStart();
+        lane3Horse.goBackToStart();
+    
+        while (!finished) {
+            // Move each horse
+            moveHorse(lane1Horse);
+            moveHorse(lane2Horse);
+            moveHorse(lane3Horse);
+    
+            // Print the race positions
+            printRace();
+    
+            // Check if any of the three horses has won the race
+            if (raceWonBy(lane1Horse)) {
+                winner = lane1Horse;
+                finished = true;
+            } else if (raceWonBy(lane2Horse)) {
+                winner = lane2Horse;
+                finished = true;
+            } else if (raceWonBy(lane3Horse)) {
+                winner = lane3Horse;
+                finished = true;
+            } else {
+                finished = false;
+            }
+    
+            // Wait for 100 milliseconds
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    
+        // Display the name of the winning horse
+        if (winner != null) {
+            System.out.println("The winner is: " + winner.getName());
+        } else {
+            System.out.println("No winners - all horses have fallen.");
+        }
+    }
+    
+    
+    /**
+     * Randomly make a horse move forward or fall depending
+     * on its confidence rating
+     * A fallen horse cannot move
+     * 
+     * @param theHorse the horse to be moved
+     */
+    private static void moveHorse(Horse theHorse)
+    {
+        //if the horse has fallen it cannot move, 
+        //so only run if it has not fallen
+        
+        if  (!theHorse.hasFallen())
+        {
+            //the probability that the horse will move forward depends on the confidence;
+            if (Math.random() < theHorse.getConfidence())
+            {
+               theHorse.moveForward();
+            }
+
+            if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
+            {
+                theHorse.fall();
+            }
+        }
+    }
+        
+    /** 
+     * Determines if a horse has won the race or if all horses have fallen
+     *
+     * @param theHorse The horse we are testing
+     * @return "winner" if a horse has won, "no winner" if all horses have fallen, or "not finished" if the race is ongoing
+     */
+    public static boolean raceWonBy(Horse theHorse)
+    {
+        if (theHorse.getDistanceTravelled() == raceLength)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    /***
+     * Print the race on the terminal
+     */
+    static void printRace()
+    {
+        System.out.print('\u000C'); 
+        
+        multiplePrint('=',raceLength+3); 
+        System.out.println();
+        
+        printLane(lane1Horse);
+        System.out.println();
+        
+        printLane(lane2Horse);
+        System.out.println();
+        
+        printLane(lane3Horse);
+        System.out.println();
+        
+        multiplePrint('=',raceLength+3); 
+        System.out.println();    
+    }
+    
+    /**
+     * print a horse's lane during the race
+     * for example
+     * |           X                      |
+     * to show how far the horse has run
+     */
+    private static void printLane(Horse theHorse)
+    {
+        int spacesBefore = theHorse.getDistanceTravelled();
+        int spacesAfter = raceLength - theHorse.getDistanceTravelled();
+        
+        System.out.print('|');
+    
+        multiplePrint(' ',spacesBefore);
+        
+        //if the horse has fallen then print dead
+        //else print the horse's symbol
+        if(theHorse.hasFallen())
+        {
+            System.out.print('\u2322');
+        }
+        else
+        {
+            System.out.print(theHorse.getSymbol());
+        }
+        
+        multiplePrint(' ',spacesAfter);
+        
+        System.out.print('|');
+    }
+        
+    
+    /***
+     * print a character a given number of times.
+     * e.g. printmany('x',5) will print: xxxxx
+     * 
+     * @param aChar the character to Print
+     */
+    private static void multiplePrint(char aChar, int times)
+    {
+        int i = 0;
+        while (i < times)
+        {
+            System.out.print(aChar);
+            i = i + 1;
+        }
+    }
+}
