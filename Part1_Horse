@@ -1,0 +1,109 @@
+/**
+ * Represents a horse in a race with its symbol, name, confidence, distance travelled, and falling status.
+ * A horse can also be customized with breed, color, and horseshoes.
+ * 
+ * @author Tuana Özyıldırım
+ * @version 1.0/20 April 2024
+ */
+public class Horse {
+    private char symbol;
+    private String name;
+    private double confidence;
+    private int distanceTravelled;
+    private boolean fallen;
+    private String breed;
+    private String color;
+
+    /**
+     * Constructor for objects of class Horse
+     * a
+     * @param horseSymbol   
+     * @param horseName      
+     * @param horseBreed     
+     * @param horseColor     
+     * @param horseConfidence 
+     */
+    public Horse(char horseSymbol, String horseName, String horseBreed, String horseColor, double horseConfidence) {
+        symbol = horseSymbol;
+        name = horseName;
+        breed = horseBreed;
+        color = horseColor;
+        confidence = validateConfidence(horseConfidence);
+        distanceTravelled = 0;
+        fallen = false;
+    }
+
+    /**
+     * Validates and sets the confidence level of the horse.
+     * 
+     * @param newConfidence 
+     */
+    public void setConfidence(double newConfidence) {
+        confidence = validateConfidence(newConfidence);
+    }
+
+    /**
+     * Validates the confidence level.
+     * 
+     * @param newConfidence 
+     * @return 
+     */
+    private double validateConfidence(double newConfidence) {
+        if (newConfidence >= 0 && newConfidence <= 1) {
+            return newConfidence;
+        } else {
+            System.out.println("Confidence must be between 0 and 1");
+            return confidence; 
+        }
+    }
+
+    public char getSymbol() {
+        return symbol;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public void fall() {
+        fallen = true;
+    }
+
+    public boolean hasFallen() {
+        return fallen;
+    }
+
+    public int getDistanceTravelled() {
+        return distanceTravelled;
+    }
+
+    public void moveForward() {
+        if (!fallen) {
+            distanceTravelled++;
+        }
+    }
+
+    public void goBackToStart() {
+        distanceTravelled = 0;
+        fallen = false;
+    }
+
+        public static boolean raceWonBy(Horse theHorse) {
+            int raceLength = 20;
+            if (theHorse.getDistanceTravelled() == raceLength) {
+                return true;
+            } else {
+                return false;
+        }
+  }
+
+        public double getSpeed() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getSpeed'");
+        }
+}
+
