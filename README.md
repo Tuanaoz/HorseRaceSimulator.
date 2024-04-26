@@ -4,7 +4,7 @@ This Java application simulates a horse racing game with a graphical user interf
 
 
 first of all, download the repository to your local machine:
-https://github.com/Tuanaoz/HorseRaceSimulator.
+https://github.com/Tuanaoz/HorseRaceSimulator./tree/main
 
 secondly, Navigate to the project directory:
 cd horse-racing-game
