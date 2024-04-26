@@ -1,0 +1,152 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GUI extends JFrame implements ActionListener {
+    private double balance;
+    private JLabel balanceLabel;
+    private JLabel oddsLabel;
+
+    private JTextField initialBalanceField;
+    private JComboBox<String> horseCoat;
+    private JComboBox<String> horseBreed;
+    private static JTextField trackLengthField;
+    private JPanel raceTrackPanel;
+    private JTextField betAmountField;
+    private JButton placeBetButton;
+    private JComboBox<String> horseSelection;
+    private HorseRaceGUI horseRaceGUI;
+    private JButton oddsButton; 
+    private JButton startButton; 
+
+    private boolean betPlaced = false; 
+
+    public GUI() {
+        setTitle("Horse Race");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JLabel horseBreedLabel = new JLabel("Horse breed:");
+        horseBreed = new JComboBox<>(new String[]{"Thoroughbred", "Quarter Horse", "Arabian", "Appaloosa"});
+        JLabel horseCoatLabel = new JLabel("Horse coat colour:");
+        horseCoat = new JComboBox<>(new String[]{"Black", "White", "Brown", "Spotted"});
+
+        balanceLabel = new JLabel("Current Balance: " + balance);
+        oddsLabel = new JLabel("");
+
+        // Create components
+        JLabel balanceInputLabel = new JLabel("Initial Balance:");
+        initialBalanceField = new JTextField(10);
+        JButton setBalanceButton = new JButton("Set Balance");
+        setBalanceButton.addActionListener(this);
+
+        JLabel trackLabel = new JLabel("Number of Tracks:");
+        JComboBox<Integer> trackCountComboBox = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
+        JLabel lengthLabel = new JLabel("Track Length (m):");
+        trackLengthField = new JTextField("20");
+
+        JLabel selectHorseLabel = new JLabel("Select Horse:");
+        horseSelection = new JComboBox<>(new String[]{"Horse 1", "Horse 2", "Horse 3"});
+        JLabel betLabel = new JLabel("Bet Amount:");
+        betAmountField = new JTextField(10);
+        placeBetButton = new JButton("Place Bet");
+        placeBetButton.addActionListener(this);
+
+        startButton = new JButton("Start Race");
+        startButton.addActionListener(this);
+        startButton.setEnabled(false); 
+        startButton.setPreferredSize(new Dimension(150, startButton.getPreferredSize().height)); 
+
+        // Create Odds button
+        oddsButton = new JButton("Odds");
+        oddsButton.addActionListener(this); 
+
+        // Create panels
+        JPanel mainPanel = new JPanel(new GridLayout(7, 2));
+        JPanel trackPanel = new JPanel();
+        JPanel horsePanel = new JPanel();
+        raceTrackPanel = new JPanel();
+        JPanel betPanel = new JPanel();
+
+        // Add components to panels
+        betPanel.add(horseBreedLabel);
+        betPanel.add(horseBreed);
+        betPanel.add(horseCoatLabel);
+        betPanel.add(horseCoat);
+
+        trackPanel.add(trackLabel);
+        trackPanel.add(trackCountComboBox);
+        trackPanel.add(lengthLabel);
+        trackPanel.add(trackLengthField);
+
+        betPanel.add(balanceInputLabel);
+        betPanel.add(initialBalanceField);
+        betPanel.add(setBalanceButton);
+        betPanel.add(selectHorseLabel);
+        betPanel.add(horseSelection);
+        betPanel.add(betLabel);
+        betPanel.add(betAmountField);
+        betPanel.add(placeBetButton);
+        betPanel.add(balanceLabel);
+        betPanel.add(oddsLabel);
+        betPanel.add(oddsButton); 
+        betPanel.add(startButton); 
+
+        mainPanel.add(trackPanel);
+        mainPanel.add(horsePanel);
+        mainPanel.add(betPanel);
+
+        add(mainPanel, BorderLayout.NORTH);
+        add(raceTrackPanel, BorderLayout.CENTER);
+
+        // Set frame size
+        setSize(800, 600);
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Set Balance")) {
+            try {
+                balance = Double.parseDouble(initialBalanceField.getText());
+                updateBalance(balance);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid balance input. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (e.getActionCommand().equals("Start Race") && betPlaced) {
+            horseRaceGUI = new HorseRaceGUI(balance, this);
+
+        } else if (e.getActionCommand().equals("Place Bet")) {
+            horseRaceGUI = new HorseRaceGUI(balance, this);
+            betPlaced = true; 
+            startButton.setEnabled(true); 
+
+        } else if (e.getSource() == oddsButton) { 
+
+            double horse1Odds = 2.5;
+            double horse2Odds = 3.0;
+            double horse3Odds = 4.5;
+            String message = "Odds: Horse 1 (" + horse1Odds + "), Horse 2 (" + horse2Odds + "), Horse 3 (" + horse3Odds + ")";
+            JOptionPane.showMessageDialog(this, message, "Odds", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public void updateBalance(double newBalance) {
+        balance = newBalance;
+        balanceLabel.setText("Current Balance: " + balance);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(GUI::new);
+    }
+
+    public int getBetAmount() {
+        return Integer.parseInt(betAmountField.getText());
+    }
+
+    public void updateOdds(double horse1Odds, double horse2Odds, double horse3Odds) {
+        oddsLabel.setText("Odds: Horse 1 (" + horse1Odds + "), Horse 2 (" + horse2Odds + "), Horse 3 (" + horse3Odds + ")");
+        oddsLabel.revalidate();
+        oddsLabel.repaint();
+    }
+}
+

@@ -1,0 +1,141 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
+
+public class HorseRaceGUI extends JFrame implements ActionListener {
+    private static final int WIDTH = 200;
+    private static final int HEIGHT = 150;
+    private JPanel raceTrackPanel;
+    private Race race;
+    private JLabel horse1Label;
+    private JLabel horse2Label;
+    private JLabel horse3Label;
+    private double balance;
+    private GUI gui;
+
+    public HorseRaceGUI(double balance, GUI gui) {
+        this.balance = balance;
+        this.gui = gui;
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(800, 600);
+
+        ImageIcon background = new ImageIcon("background.jpg");
+
+        horse1Label = new JLabel(scaleImage(new ImageIcon("horse1.png").getImage()));
+        horse2Label = new JLabel(scaleImage(new ImageIcon("horse2.jpg").getImage()));
+        horse3Label = new JLabel(scaleImage(new ImageIcon("horse3.jpg").getImage()));
+
+        raceTrackPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(background.getImage(), 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+        raceTrackPanel.setLayout(null);
+
+        horse1Label.setBounds(10, 10, WIDTH, HEIGHT);
+        horse2Label.setBounds(10, 150, WIDTH, HEIGHT);
+        horse3Label.setBounds(10, 290, WIDTH, HEIGHT);
+
+        raceTrackPanel.add(horse1Label);
+        raceTrackPanel.add(horse2Label);
+        raceTrackPanel.add(horse3Label);
+
+        add(raceTrackPanel, BorderLayout.CENTER);
+
+        JButton startRaceButton = new JButton("Start Race");
+        startRaceButton.addActionListener(this);
+        add(startRaceButton, BorderLayout.SOUTH);
+
+        race = new Race(20);
+
+        setVisible(true);
+    }
+
+    private ImageIcon scaleImage(Image image) {
+        Image scaledImage = image.getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaledImage);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Start Race")) {
+            startRace();
+        }
+    }
+
+    private void startRace() {
+        Horse horse1 = new Horse('♘', "horse1", "Thoroughbred", "black", 0.6);
+        Horse horse2 = new Horse('♞', "horse2", "Thoroughbred", "brown", 0.6);
+        Horse horse3 = new Horse('♟', "horse3", "Thoroughbred", "spotted", 0.4);
+
+        Race.addHorse(horse1, 1);
+        Race.addHorse(horse2, 2);
+        Race.addHorse(horse3, 3);
+
+        // Start the race
+        Race.startRace();
+
+        updateRaceDisplay();
+    }
+
+    private void updateRaceDisplay() {
+        while (true) {
+            moveHorse(Race.lane1Horse, horse1Label);
+            moveHorse(Race.lane2Horse, horse2Label);
+            moveHorse(Race.lane3Horse, horse3Label);
+
+            try {
+                TimeUnit.MILLISECONDS.sleep(50);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+            // Check if the race is finished
+            if (raceWonBy(Race.lane1Horse) || raceWonBy(Race.lane2Horse) || raceWonBy(Race.lane3Horse)) {
+                break;
+            }
+        }
+
+        Horse winner = determineWinner();
+
+        if (winner != null) {
+            gui.updateBalance(balance + gui.getBetAmount()); 
+            JOptionPane.showMessageDialog(this, "The winner is: " + winner.getName(), "Race Result", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No winners - all horses have fallen.", "Race Result", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void moveHorse(Horse theHorse, JLabel horseLabel) {
+        if (!theHorse.hasFallen()) {
+            int distance = theHorse.getDistanceTravelled();
+            horseLabel.setLocation(distance * 20 + 10, horseLabel.getY());
+            horseLabel.repaint();
+        }
+    }
+
+    private boolean raceWonBy(Horse theHorse) {
+        return Race.raceWonBy(theHorse);
+    }
+
+    private Horse determineWinner() {
+        if (raceWonBy(Race.lane1Horse)) {
+            return Race.lane1Horse;
+        } else if (raceWonBy(Race.lane2Horse)) {
+            return Race.lane2Horse;
+        } else if (raceWonBy(Race.lane3Horse)) {
+            return Race.lane3Horse;
+        } else {
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new HorseRaceGUI(0, null));
+    }
+}
