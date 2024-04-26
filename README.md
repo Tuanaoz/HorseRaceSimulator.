@@ -3,8 +3,8 @@
 This Java application simulates a horse racing game with a graphical user interface (GUI). Players can set their initial balance, place bets on horses, and view the race visually. The Java environment has to be properly set up before running the code.
 
 
-first of all, Clone the repository to your local machine:
-git clone https://github.com/Tuanapz/HorseRaceSimulator.git
+first of all, download the repository to your local machine:
+https://github.com/Tuanaoz/HorseRaceSimulator.
 
 secondly, Navigate to the project directory:
 cd horse-racing-game
