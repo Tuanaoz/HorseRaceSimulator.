@@ -1,6 +1,6 @@
 # HorseRaceSimulator.
 
-This Java application simulates a horse racing game with a graphical user interface (GUI). Players can set their initial balance, place bets on horses, and view the race visually. The Java environment has to be properly set up before running the code.
+This Java application simulates a horse racing game with a graphical user interface (GUI). Players can set their initial balance, place bets on horses, and view the race visually. The Java environment has to be properly set up before running the code.Select GUI-branch to access the code at part 2
 
 
 first of all, download the repository to your local machine:
