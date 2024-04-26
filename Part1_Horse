@@ -16,7 +16,7 @@ public class Horse {
 
     /**
      * Constructor for objects of class Horse
-     * a
+     * 
      * @param horseSymbol   
      * @param horseName      
      * @param horseBreed     
@@ -106,4 +106,3 @@ public class Horse {
             throw new UnsupportedOperationException("Unimplemented method 'getSpeed'");
         }
 }
-
